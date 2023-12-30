@@ -3,9 +3,7 @@ package common
 import (
 	"context"
 	"encoding/base64"
-	"errors"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,37 +20,22 @@ type Token struct {
 	// https://developers.sber.ru/docs/ru/gigachat/api/authorization#format-otveta25
 	AccessToken string              `json:"access_token"`
 	ExpiresAt   timehelper.UnixMsec `json:"expires_at"`
+	// Client Id
+	id string
+	// Client Secret
+	secret string
 }
 
-func getIdSecret() (string, string, error) {
-	id := os.Getenv("SBER_GIGACHAT_CLIENT_ID")
-	if id == "" {
-		return "", "", errors.New("no Client Id")
-	}
-	secret := os.Getenv("SBER_GIGACHAT_CLIENT_SECRET")
-	if secret == "" {
-		return "", "", errors.New("no Client Secret")
-	}
-	return id, secret, nil
-}
-
-// AuthBasic returns Basic authorization value.
-func AuthBasic(ctx context.Context) (string, error) {
+// authBasic returns Basic authorization value.
+func authBasic(ctx context.Context, id, secret string) (string, error) {
 	// https://developers.sber.ru/docs/ru/gigachat/api/authorization#shag-1-podklyuchenie-giga-chat-api-i-poluchenie-avtorizatsionnyh-dannyh
-	id, secret, err := getIdSecret()
-	if err != nil {
-		return "", err
-	}
 	return "Basic " + base64.StdEncoding.EncodeToString([]byte(id+":"+secret)), nil
 }
 
 // GetToken returns access [Token].
-func GetToken(ctx context.Context, currToken *Token) (*Token, error) {
+func GetToken(ctx context.Context, id, secret string) (*Token, error) {
 	// https://developers.sber.ru/docs/ru/gigachat/api/authorization#shag-2-poluchenie-tokena-dostupa-v-obmen-na-avtorizatsionnye-dannye
-	if currToken != nil && time.Until(time.Time(currToken.ExpiresAt)) > 1*time.Minute {
-		return currToken, nil
-	}
-	auth, err := AuthBasic(ctx)
+	auth, err := authBasic(ctx, id, secret)
 	if err != nil {
 		return nil, err
 	}
@@ -67,17 +50,27 @@ func GetToken(ctx context.Context, currToken *Token) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	if currToken != nil {
-		currToken = t
-	}
+	t.id = id
+	t.secret = secret
 	return t, nil
 }
 
-// AuthBearer returns Bearer authorization value.
-func AuthBearer(ctx context.Context, currToken *Token) (string, error) {
-	t, err := GetToken(ctx, currToken)
+func adjustToken(ctx context.Context, token *Token) error {
+	if token != nil && time.Until(time.Time(token.ExpiresAt)) > 1*time.Minute {
+		return nil
+	}
+	t, err := GetToken(ctx, token.id, token.secret)
 	if err != nil {
+		return err
+	}
+	*token = *t
+	return nil
+}
+
+// AuthBearer returns Bearer authorization value.
+func AuthBearer(ctx context.Context, token *Token) (string, error) {
+	if err := adjustToken(ctx, token); err != nil {
 		return "", err
 	}
-	return "Bearer " + t.AccessToken, nil
+	return "Bearer " + token.AccessToken, nil
 }
