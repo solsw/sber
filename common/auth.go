@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/solsw/httphelper"
+	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/timehelper"
 )
 
@@ -46,7 +46,7 @@ func GetToken(ctx context.Context, id, secret string) (*Token, error) {
 	h.Set("Content-Type", "application/x-www-form-urlencoded")
 	in := "scope=GIGACHAT_API_PERS"
 	// in := "scope=GIGACHAT_API_CORP"
-	t, err := httphelper.RestInOut[string, Token, ErrorOut](context.Background(), http.DefaultClient, http.MethodPost, url, h, &in)
+	t, err := rest.InOut[string, Token, ErrorOut](context.Background(), http.DefaultClient, http.MethodPost, url, h, &in)
 	if err != nil {
 		return nil, err
 	}

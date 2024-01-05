@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/solsw/httphelper"
+	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
 
@@ -35,6 +35,6 @@ func TokensCount(ctx context.Context, currToken *common.Token, tokensCountIn *To
 	h := make(http.Header)
 	h.Set("Authorization", auth)
 	h.Set("Content-Type", "application/json")
-	return httphelper.RestInOut[TokensCountIn, []TokensCountOut, common.ErrorOut](
+	return rest.InOut[TokensCountIn, []TokensCountOut, common.ErrorOut](
 		context.Background(), http.DefaultClient, http.MethodPost, url, h, tokensCountIn)
 }

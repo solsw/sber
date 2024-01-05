@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	"github.com/solsw/generichelper"
-	"github.com/solsw/httphelper"
+	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
 
@@ -38,7 +38,7 @@ func Models(ctx context.Context, currToken *common.Token) (*ModelsOut, error) {
 	}
 	h := make(http.Header)
 	h.Set("Authorization", auth)
-	return httphelper.RestInOut[generichelper.NoType, ModelsOut, common.ErrorOut](
+	return rest.InOut[generichelper.NoType, ModelsOut, common.ErrorOut](
 		context.Background(), http.DefaultClient, http.MethodGet, url, h, nil)
 }
 
@@ -55,6 +55,6 @@ func ModelsModel(ctx context.Context, currToken *common.Token, model string) (*M
 	}
 	h := make(http.Header)
 	h.Set("Authorization", auth)
-	return httphelper.RestInOut[generichelper.NoType, Model, common.ErrorOut](
+	return rest.InOut[generichelper.NoType, Model, common.ErrorOut](
 		context.Background(), http.DefaultClient, http.MethodGet, url, h, nil)
 }

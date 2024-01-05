@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/solsw/httphelper"
+	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/timehelper"
 	"github.com/solsw/sber/common"
 )
@@ -66,6 +66,6 @@ func ChatCompletions(ctx context.Context, currToken *common.Token, chatCompletio
 	h := make(http.Header)
 	h.Set("Authorization", auth)
 	h.Set("Content-Type", "application/json")
-	return httphelper.RestInOut[ChatCompletionsIn, ChatCompletionsOut, common.ErrorOut](
+	return rest.InOut[ChatCompletionsIn, ChatCompletionsOut, common.ErrorOut](
 		context.Background(), http.DefaultClient, http.MethodPost, url, h, chatCompletionsIn)
 }
