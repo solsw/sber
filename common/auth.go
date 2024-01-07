@@ -2,11 +2,11 @@ package common
 
 import (
 	"context"
-	"encoding/base64"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/solsw/httphelper"
 	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/timehelper"
 )
@@ -26,32 +26,21 @@ type Token struct {
 	secret string
 }
 
-// authBasic returns Basic authorization value.
-func authBasic(ctx context.Context, id, secret string) (string, error) {
-	// https://developers.sber.ru/docs/ru/gigachat/api/authorization#shag-1-podklyuchenie-giga-chat-api-i-poluchenie-avtorizatsionnyh-dannyh
-	return "Basic " + base64.StdEncoding.EncodeToString([]byte(id+":"+secret)), nil
-}
-
 // GetToken returns access [Token].
 func GetToken(ctx context.Context, id, secret string) (*Token, error) {
 	// https://developers.sber.ru/docs/ru/gigachat/api/authorization#shag-2-poluchenie-tokena-dostupa-v-obmen-na-avtorizatsionnye-dannye
-	auth, err := authBasic(ctx, id, secret)
-	if err != nil {
-		return nil, err
-	}
-	url := "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
 	h := make(http.Header)
-	h.Set("Authorization", auth)
+	h.Set("Authorization", httphelper.AuthBasic(id, secret))
 	h.Set("RqUID", uuid.NewString())
 	h.Set("Content-Type", "application/x-www-form-urlencoded")
+	url := "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
 	in := "scope=GIGACHAT_API_PERS"
 	// in := "scope=GIGACHAT_API_CORP"
 	t, err := rest.InOut[string, Token, ErrorOut](context.Background(), http.DefaultClient, http.MethodPost, url, h, &in)
 	if err != nil {
 		return nil, err
 	}
-	t.id = id
-	t.secret = secret
+	t.id, t.secret = id, secret
 	return t, nil
 }
 
