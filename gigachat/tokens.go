@@ -11,22 +11,23 @@ import (
 
 // Input tokens/count object.
 type TokensCountIn struct {
-	// https://developers.sber.ru/docs/ru/gigachat/api/reference#post-tokens-count
+	// https://developers.sber.ru/docs/ru/gigachat/api/reference/rest/post-tokens-count#zapros
 	Model string   `json:"model"`
 	Input []string `json:"input"`
 }
 
 // Output tokens/count object.
 type TokensCountOut struct {
-	// https://developers.sber.ru/docs/ru/gigachat/api/reference#post-tokens-count
+	// https://developers.sber.ru/docs/ru/gigachat/api/reference/rest/post-tokens-count#responses
 	Object     string `json:"object"`
 	Tokens     int    `json:"tokens"`
 	Characters int    `json:"characters"`
 }
 
-// TokensCount returns quantity of tokens calculated by the model for every string in input array.
+// TokensCount возвращает объект с информацией о количестве токенов,
+// посчитанных заданной моделью в строках, переданных в массиве input.
 func TokensCount(ctx context.Context, currToken *common.Token, tokensCountIn *TokensCountIn) (*[]TokensCountOut, error) {
-	// https://developers.sber.ru/docs/ru/gigachat/api/reference#post-tokens-count
+	// https://developers.sber.ru/docs/ru/gigachat/api/reference/rest/post-tokens-count
 	auth, err := common.AuthBearer(ctx, currToken)
 	if err != nil {
 		return nil, err
@@ -35,6 +36,6 @@ func TokensCount(ctx context.Context, currToken *common.Token, tokensCountIn *To
 	h := make(http.Header)
 	h.Set("Authorization", auth)
 	h.Set("Content-Type", "application/json")
-	return rest.InOut[TokensCountIn, []TokensCountOut, common.ErrorOut](
-		context.Background(), http.DefaultClient, http.MethodPost, url, h, tokensCountIn)
+	return rest.JsonJson[TokensCountIn, []TokensCountOut, common.OutError](
+		ctx, http.DefaultClient, http.MethodPost, url, h, tokensCountIn, nil)
 }

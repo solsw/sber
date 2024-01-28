@@ -12,14 +12,13 @@ import (
 
 // Message.
 type Message struct {
-	// https://developers.sber.ru/docs/ru/gigachat/api/reference#post-chat-completions
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
 // Input chat/completions object.
 type ChatCompletionsIn struct {
-	// https://developers.sber.ru/docs/ru/gigachat/api/reference#post-chat-completions
+	// https://developers.sber.ru/docs/ru/gigachat/api/reference/rest/post-chat#zapros
 	Model             string    `json:"model"`
 	Messages          []Message `json:"messages"`
 	Temperature       float64   `json:"temperature,omitempty"`
@@ -47,7 +46,7 @@ type Usage struct {
 
 // Output chat/completions object.
 type ChatCompletionsOut struct {
-	// https://developers.sber.ru/docs/ru/gigachat/api/reference#post-chat-completions
+	// https://developers.sber.ru/docs/ru/gigachat/api/reference/rest/post-chat#responses
 	Choices []Choice           `json:"choices"`
 	Created timehelper.UnixSec `json:"created"`
 	Model   string             `json:"model"`
@@ -55,9 +54,9 @@ type ChatCompletionsOut struct {
 	Object  string             `json:"object"`
 }
 
-// ChatCompletions returns the model's response taking into account the provided messages.
+// ChatCompletions возвращает ответ модели с учетом переданных сообщений.
 func ChatCompletions(ctx context.Context, currToken *common.Token, chatCompletionsIn *ChatCompletionsIn) (*ChatCompletionsOut, error) {
-	// https://developers.sber.ru/docs/ru/gigachat/api/reference#post-chat-completions
+	// https://developers.sber.ru/docs/ru/gigachat/api/reference/rest/post-chat
 	auth, err := common.AuthBearer(ctx, currToken)
 	if err != nil {
 		return nil, err
@@ -66,6 +65,6 @@ func ChatCompletions(ctx context.Context, currToken *common.Token, chatCompletio
 	h := make(http.Header)
 	h.Set("Authorization", auth)
 	h.Set("Content-Type", "application/json")
-	return rest.InOut[ChatCompletionsIn, ChatCompletionsOut, common.ErrorOut](
-		context.Background(), http.DefaultClient, http.MethodPost, url, h, chatCompletionsIn)
+	return rest.JsonJson[ChatCompletionsIn, ChatCompletionsOut, common.OutError](
+		ctx, http.DefaultClient, http.MethodPost, url, h, chatCompletionsIn, nil)
 }

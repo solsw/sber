@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -36,7 +37,7 @@ func GetToken(ctx context.Context, id, secret string) (*Token, error) {
 	url := "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
 	in := "scope=GIGACHAT_API_PERS"
 	// in := "scope=GIGACHAT_API_CORP"
-	t, err := rest.InOut[string, Token, ErrorOut](context.Background(), http.DefaultClient, http.MethodPost, url, h, &in)
+	t, err := rest.BodyJson[Token, OutError](ctx, http.DefaultClient, http.MethodPost, url, h, strings.NewReader(in), nil)
 	if err != nil {
 		return nil, err
 	}
