@@ -47,6 +47,6 @@ func Embeddings(ctx context.Context, currToken *common.Token, embeddingsIn *Embe
 	h.Set("Content-Type", "application/json")
 	h.Set("Accept", "application/json")
 	return rest.JsonJson[EmbeddingsIn, EmbeddingsOut, common.OutError](
-		ctx, http.DefaultClient, http.MethodPost, url, h, embeddingsIn, nil)
+		ctx, http.DefaultClient, http.MethodPost, url, h, embeddingsIn, rest.IsNotStatusOK)
 
 }

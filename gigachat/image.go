@@ -41,5 +41,6 @@ func FilesFileId(ctx context.Context, currToken *common.Token, fileId string) ([
 	h := make(http.Header)
 	h.Set("Authorization", auth)
 	h.Set("Accept", "application/jpg")
-	return rest.BodyBody[common.OutError](ctx, http.DefaultClient, http.MethodGet, url, h, nil, nil)
+	return rest.BodyBody[common.OutError](
+		ctx, http.DefaultClient, http.MethodGet, url, h, nil, rest.IsNotStatusOK)
 }

@@ -37,5 +37,5 @@ func TokensCount(ctx context.Context, currToken *common.Token, tokensCountIn *To
 	h.Set("Authorization", auth)
 	h.Set("Content-Type", "application/json")
 	return rest.JsonJson[TokensCountIn, []TokensCountOut, common.OutError](
-		ctx, http.DefaultClient, http.MethodPost, url, h, tokensCountIn, nil)
+		ctx, http.DefaultClient, http.MethodPost, url, h, tokensCountIn, rest.IsNotStatusOK)
 }

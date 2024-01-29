@@ -37,7 +37,8 @@ func Models(ctx context.Context, currToken *common.Token) (*ModelsOut, error) {
 	}
 	h := make(http.Header)
 	h.Set("Authorization", auth)
-	return rest.BodyJson[ModelsOut, common.OutError](ctx, http.DefaultClient, http.MethodGet, url, h, nil, nil)
+	return rest.BodyJson[ModelsOut, common.OutError](
+		ctx, http.DefaultClient, http.MethodGet, url, h, nil, rest.IsNotStatusOK)
 }
 
 // ModelsModel возвращает объект с описанием указанной модели.
@@ -53,5 +54,6 @@ func ModelsModel(ctx context.Context, currToken *common.Token, model string) (*M
 	}
 	h := make(http.Header)
 	h.Set("Authorization", auth)
-	return rest.BodyJson[Model, common.OutError](ctx, http.DefaultClient, http.MethodGet, url, h, nil, nil)
+	return rest.BodyJson[Model, common.OutError](
+		ctx, http.DefaultClient, http.MethodGet, url, h, nil, rest.IsNotStatusOK)
 }

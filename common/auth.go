@@ -37,7 +37,8 @@ func GetToken(ctx context.Context, id, secret string) (*Token, error) {
 	url := "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
 	in := "scope=GIGACHAT_API_PERS"
 	// in := "scope=GIGACHAT_API_CORP"
-	t, err := rest.BodyJson[Token, OutError](ctx, http.DefaultClient, http.MethodPost, url, h, strings.NewReader(in), nil)
+	t, err := rest.BodyJson[Token, OutError](
+		ctx, http.DefaultClient, http.MethodPost, url, h, strings.NewReader(in), rest.IsNotStatusOK)
 	if err != nil {
 		return nil, err
 	}

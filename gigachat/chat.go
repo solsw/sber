@@ -66,5 +66,5 @@ func ChatCompletions(ctx context.Context, currToken *common.Token, chatCompletio
 	h.Set("Authorization", auth)
 	h.Set("Content-Type", "application/json")
 	return rest.JsonJson[ChatCompletionsIn, ChatCompletionsOut, common.OutError](
-		ctx, http.DefaultClient, http.MethodPost, url, h, chatCompletionsIn, nil)
+		ctx, http.DefaultClient, http.MethodPost, url, h, chatCompletionsIn, rest.IsNotStatusOK)
 }
