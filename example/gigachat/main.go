@@ -35,6 +35,11 @@ func main() {
 	errs = append(errs, err)
 	errs = append(errs, modelsModel(t, mm.Data[0].Id))
 	errs = append(errs, tokensCount(t, mm.Data[0].Id))
+	errs = append(errs, chatCompletions(t, mm.Data[0].Id))
+	ccOut, err := image(t, mm.Data[0].Id)
+	errs = append(errs, err)
+	errs = append(errs, filesFileId(t, ccOut.Choices[0].Message.Content))
+	errs = append(errs, embeddings(t))
 	if jerr := errors.Join(errs...); jerr != nil {
 		panic(jerr)
 	}
