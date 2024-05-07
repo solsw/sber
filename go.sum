@@ -1,11 +1,11 @@
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/solsw/errorhelper v0.6.0 h1:FUscknJxFMhyBzgRlsHhoIhXhFoTjwoH1ghhOgF7MCY=
-github.com/solsw/errorhelper v0.6.0/go.mod h1:Brc0aExJO9MBI7UEHpo7VDEOdPj1eU6GO6qR1CnJV84=
-github.com/solsw/generichelper v0.17.1 h1:M/kNa/yJKSBSP4N6f7J1We/Wfh4gxWRT6F4wpMuJjbk=
-github.com/solsw/generichelper v0.17.1/go.mod h1:8l4YjYBOZakA0G+wWJMK1dnbq87xp34EbP7UR9rfIBw=
-github.com/solsw/httphelper v0.9.0 h1:oNVrp/k3/l63tFb7s7VY1qbITD9nmg2NuzJxNsuzkyw=
-github.com/solsw/httphelper v0.9.0/go.mod h1:GZgjrTMO9PsYb3l9QvL8b+w3yBUL7lrl/sBsTREAhEQ=
+github.com/solsw/errorhelper v0.6.1 h1:Oy2fRCg4rz4gBmsCf6T6B0si7GV+FrPbYCvWR502vlg=
+github.com/solsw/errorhelper v0.6.1/go.mod h1:Brc0aExJO9MBI7UEHpo7VDEOdPj1eU6GO6qR1CnJV84=
+github.com/solsw/generichelper v0.18.0 h1:RUSpQD95rtFDnSY/2m0VUv7UnOuoY+qNy+Pia8a0sHM=
+github.com/solsw/generichelper v0.18.0/go.mod h1:8l4YjYBOZakA0G+wWJMK1dnbq87xp34EbP7UR9rfIBw=
+github.com/solsw/httphelper v0.13.0 h1:hUNd+uz07sBrWPLQk+R1SV5dokdxB2ZS6YX0c54Zqq4=
+github.com/solsw/httphelper v0.13.0/go.mod h1:WwHccjjBYsXcTOrBIli8rLg1ENObkARtrWDKmpYrZeA=
 github.com/solsw/runtimehelper v0.2.0 h1:lxkQiD6lKWZti1S830Ee6qSUavaCb81SWJI+0hrXios=
 github.com/solsw/runtimehelper v0.2.0/go.mod h1:86mFcvL3sela4Eiiq4/WezGLE2IoMMVlfZT52cUImjQ=
 github.com/solsw/timehelper v0.10.0 h1:sXhNcURwyRs4I87mZt6mV1KNb/QxV6/Rq1PAOXgU5/4=

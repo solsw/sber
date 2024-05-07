@@ -20,7 +20,7 @@ import (
 // https://developers.sber.ru/docs/ru/gigachat/api/integration-individuals
 // https://developers.sber.ru/docs/ru/gigachat/api/integration-legal-entities
 
-// Token as returned from /api/v2/oauth endpoint.
+// Токен доступа, возвращаемый по запросу к /api/v2/oauth.
 type Token struct {
 	// https://developers.sber.ru/docs/ru/gigachat/api/authorization#format-otveta25
 	AccessToken string              `json:"access_token"`
@@ -32,22 +32,25 @@ type Token struct {
 	secret string
 }
 
-// NewToken returns new [Token].
+// NewToken возвращает новый [Token].
 func NewToken(ctx context.Context, id, secret string) (*Token, error) {
 	// https://developers.sber.ru/docs/ru/gigachat/api/authorization#shag-2-poluchenie-tokena-dostupa-v-obmen-na-avtorizatsionnye-dannye
 	// https://developers.sber.ru/docs/ru/gigachat/individuals-quickstart#shag-2-poluchenie-tokena-dostupa
+	// https://developers.sber.ru/docs/ru/gigachat/legal-quickstart#shag-4-poluchenie-tokena-dostupa
 	// https://developers.sber.ru/docs/ru/gigachat/api/reference/rest/post-token
-	h := make(http.Header)
-	h.Set("Authorization", httphelper.AuthBasic(id, secret))
-	h.Set("RqUID", uuid.NewString())
-	h.Set("Content-Type", "application/x-www-form-urlencoded")
 	u := "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
-	body := neturl.Values{}
-	body.Set("scope", "GIGACHAT_API_PERS")
-	// body.Set("scope", "GIGACHAT_API_CORP")
-	in := strings.NewReader(body.Encode())
-	t, err := rest.BodyJson[Token, common.OutError](
-		ctx, http.DefaultClient, http.MethodPost, u, h, in, rest.IsNotStatusOK)
+	v := neturl.Values{}
+	v.Set("scope", "GIGACHAT_API_PERS")
+	// v.Set("scope", "GIGACHAT_API_CORP")
+	body := strings.NewReader(v.Encode())
+	rq, err := http.NewRequestWithContext(ctx, http.MethodPost, u, body)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	rq.Header.Set("Authorization", httphelper.AuthBasic(id, secret))
+	rq.Header.Set("RqUID", uuid.NewString())
+	rq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	t, err := rest.ReqJson[Token, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}
@@ -55,7 +58,7 @@ func NewToken(ctx context.Context, id, secret string) (*Token, error) {
 	return t, nil
 }
 
-// VetToken updates 't', if needed.
+// VetToken обновляет [Token], если истёк его срок действия.
 func VetToken(ctx context.Context, t *Token) error {
 	if t == nil {
 		return errorhelper.CallerError(errors.New("nil token"))

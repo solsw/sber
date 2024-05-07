@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/solsw/errorhelper"
+	"github.com/solsw/httphelper"
 	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
@@ -40,15 +41,21 @@ func Embeddings(ctx context.Context, accessToken string, embeddingsIn *Embedding
 	if accessToken == "" {
 		return nil, errorhelper.CallerError(errors.New("no accessToken"))
 	}
-	u, err := url.JoinPath(baseApiUrl, "embeddings")
+	u, _ := url.JoinPath(baseApiUrl, "embeddings")
+	body, err := httphelper.JsonBody(embeddingsIn)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}
-	h := make(http.Header)
-	h.Set("Authorization", "Bearer "+accessToken)
-	h.Set("Content-Type", "application/json")
-	h.Set("Accept", "application/json")
-	out, err := rest.JsonJson[EmbeddingsIn, EmbeddingsOut, common.OutError](
-		ctx, http.DefaultClient, http.MethodPost, u, h, embeddingsIn, rest.IsNotStatusOK)
-	return out, errorhelper.CallerError(err)
+	rq, err := http.NewRequestWithContext(ctx, http.MethodPost, u, body)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	rq.Header.Set("Authorization", "Bearer "+accessToken)
+	rq.Header.Set("Content-Type", "application/json")
+	rq.Header.Set("Accept", "application/json")
+	out, err := rest.ReqJson[EmbeddingsOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	return out, nil
 }

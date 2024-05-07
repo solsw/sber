@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/solsw/errorhelper"
+	"github.com/solsw/httphelper"
 	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/timehelper"
 	"github.com/solsw/sber/common"
@@ -86,10 +87,19 @@ func ChatCompletions(ctx context.Context, accessToken string, chatCompletionsIn 
 		return nil, errorhelper.CallerError(errors.New("no accessToken"))
 	}
 	u, _ := url.JoinPath(baseApiUrl, "chat/completions")
-	h := make(http.Header)
-	h.Set("Authorization", "Bearer "+accessToken)
-	h.Set("Content-Type", "application/json")
-	out, err := rest.JsonJson[ChatCompletionsIn, ChatCompletionsOut, common.OutError](
-		ctx, http.DefaultClient, http.MethodPost, u, h, chatCompletionsIn, rest.IsNotStatusOK)
-	return out, errorhelper.CallerError(err)
+	body, err := httphelper.JsonBody(chatCompletionsIn)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	rq, err := http.NewRequestWithContext(ctx, http.MethodPost, u, body)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	rq.Header.Set("Authorization", "Bearer "+accessToken)
+	rq.Header.Set("Content-Type", "application/json")
+	out, err := rest.ReqJson[ChatCompletionsOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	return out, nil
 }

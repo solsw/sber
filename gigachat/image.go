@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	"github.com/solsw/errorhelper"
+	"github.com/solsw/httphelper"
 	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
@@ -37,14 +38,16 @@ func FilesFileId(ctx context.Context, accessToken string, fileId string) ([]byte
 	if accessToken == "" {
 		return nil, errorhelper.CallerError(errors.New("no accessToken"))
 	}
-	u, err := url.JoinPath(baseApiUrl, "files", fileId, "content")
+	u, _ := url.JoinPath(baseApiUrl, "files", fileId, "content")
+	rq, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}
-	h := make(http.Header)
-	h.Set("Authorization", "Bearer "+accessToken)
-	h.Set("Accept", "application/jpg")
-	out, err := rest.BodyBody[common.OutError](
-		ctx, http.DefaultClient, http.MethodGet, u, h, nil, rest.IsNotStatusOK)
-	return out, errorhelper.CallerError(err)
+	rq.Header.Set("Authorization", "Bearer "+accessToken)
+	rq.Header.Set("Accept", "application/jpg")
+	jpg, err := rest.ReqBody[common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	return jpg, nil
 }

@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/solsw/errorhelper"
+	"github.com/solsw/httphelper"
 	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
@@ -34,10 +35,19 @@ func TokensCount(ctx context.Context, accessToken string, tokensCountIn *TokensC
 		return nil, errorhelper.CallerError(errors.New("no accessToken"))
 	}
 	u, _ := url.JoinPath(baseApiUrl, "tokens/count")
-	h := make(http.Header)
-	h.Set("Authorization", "Bearer "+accessToken)
-	h.Set("Content-Type", "application/json")
-	out, err := rest.JsonJson[TokensCountIn, []TokensCountOut, common.OutError](
-		ctx, http.DefaultClient, http.MethodPost, u, h, tokensCountIn, rest.IsNotStatusOK)
-	return out, errorhelper.CallerError(err)
+	body, err := httphelper.JsonBody(tokensCountIn)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	rq, err := http.NewRequestWithContext(ctx, http.MethodPost, u, body)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	rq.Header.Set("Authorization", "Bearer "+accessToken)
+	rq.Header.Set("Content-Type", "application/json")
+	out, err := rest.ReqJson[[]TokensCountOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	if err != nil {
+		return nil, errorhelper.CallerError(err)
+	}
+	return out, nil
 }

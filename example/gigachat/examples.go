@@ -21,19 +21,6 @@ func models(accessToken string) (*gigachat.ModelsOut, error) {
 	return mm, nil
 }
 
-func modelsModel(t *auth.Token, mn string) error {
-	if err := auth.VetToken(context.Background(), t); err != nil {
-		return errorhelper.CallerError(err)
-	}
-	m, err := gigachat.ModelsModel(context.Background(), t.AccessToken, mn)
-	if err != nil {
-		return errorhelper.CallerError(err)
-	}
-	bb, _ := json.MarshalIndent(m, "", "  ")
-	fmt.Println(string(bb))
-	return nil
-}
-
 func tokensCount(t *auth.Token, mn string) error {
 	if err := auth.VetToken(context.Background(), t); err != nil {
 		return errorhelper.CallerError(err)
