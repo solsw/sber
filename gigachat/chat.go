@@ -8,7 +8,6 @@ import (
 
 	"github.com/solsw/errorhelper"
 	"github.com/solsw/httphelper"
-	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/timehelper"
 	"github.com/solsw/sber/common"
 )
@@ -97,7 +96,7 @@ func ChatCompletions(ctx context.Context, accessToken string, chatCompletionsIn 
 	}
 	rq.Header.Set("Authorization", "Bearer "+accessToken)
 	rq.Header.Set("Content-Type", "application/json")
-	out, err := rest.ReqJson[ChatCompletionsOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	out, err := httphelper.ReqJson[ChatCompletionsOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}

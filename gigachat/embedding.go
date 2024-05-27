@@ -8,7 +8,6 @@ import (
 
 	"github.com/solsw/errorhelper"
 	"github.com/solsw/httphelper"
-	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
 
@@ -53,7 +52,7 @@ func Embeddings(ctx context.Context, accessToken string, embeddingsIn *Embedding
 	rq.Header.Set("Authorization", "Bearer "+accessToken)
 	rq.Header.Set("Content-Type", "application/json")
 	rq.Header.Set("Accept", "application/json")
-	out, err := rest.ReqJson[EmbeddingsOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	out, err := httphelper.ReqJson[EmbeddingsOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}

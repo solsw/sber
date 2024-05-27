@@ -4,8 +4,8 @@ go 1.21
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/solsw/errorhelper v0.6.1
-	github.com/solsw/httphelper v0.13.0
+	github.com/solsw/errorhelper v0.7.0
+	github.com/solsw/httphelper v0.14.0
 	github.com/solsw/timehelper v0.10.0
 )
 

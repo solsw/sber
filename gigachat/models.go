@@ -8,7 +8,6 @@ import (
 
 	"github.com/solsw/errorhelper"
 	"github.com/solsw/httphelper"
-	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
 
@@ -40,7 +39,7 @@ func Models(ctx context.Context, accessToken string) (*ModelsOut, error) {
 		return nil, errorhelper.CallerError(err)
 	}
 	rq.Header.Set("Authorization", "Bearer "+accessToken)
-	out, err := rest.ReqJson[ModelsOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	out, err := httphelper.ReqJson[ModelsOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}

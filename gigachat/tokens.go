@@ -8,7 +8,6 @@ import (
 
 	"github.com/solsw/errorhelper"
 	"github.com/solsw/httphelper"
-	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
 
@@ -45,7 +44,7 @@ func TokensCount(ctx context.Context, accessToken string, tokensCountIn *TokensC
 	}
 	rq.Header.Set("Authorization", "Bearer "+accessToken)
 	rq.Header.Set("Content-Type", "application/json")
-	out, err := rest.ReqJson[[]TokensCountOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	out, err := httphelper.ReqJson[[]TokensCountOut, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}

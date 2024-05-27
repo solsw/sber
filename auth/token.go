@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/solsw/errorhelper"
 	"github.com/solsw/httphelper"
-	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/timehelper"
 	"github.com/solsw/sber/common"
 )
@@ -50,7 +49,7 @@ func NewToken(ctx context.Context, id, secret string) (*Token, error) {
 	rq.Header.Set("Authorization", httphelper.AuthBasic(id, secret))
 	rq.Header.Set("RqUID", uuid.NewString())
 	rq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	t, err := rest.ReqJson[Token, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	t, err := httphelper.ReqJson[Token, common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}

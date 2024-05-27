@@ -10,7 +10,6 @@ import (
 
 	"github.com/solsw/errorhelper"
 	"github.com/solsw/httphelper"
-	"github.com/solsw/httphelper/rest"
 	"github.com/solsw/sber/common"
 )
 
@@ -27,7 +26,7 @@ func FileIdFromMessageContent(content string) (string, error) {
 	u := html.UnescapeString(content)
 	var i img
 	if err := xml.Unmarshal([]byte(u), &i); err != nil {
-		return "", err
+		return "", errorhelper.CallerError(err)
 	}
 	return i.FileId, nil
 }
@@ -45,7 +44,7 @@ func FilesFileId(ctx context.Context, accessToken string, fileId string) ([]byte
 	}
 	rq.Header.Set("Authorization", "Bearer "+accessToken)
 	rq.Header.Set("Accept", "application/jpg")
-	jpg, err := rest.ReqBody[common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
+	jpg, err := httphelper.ReqBody[common.OutError](http.DefaultClient, rq, httphelper.IsNotStatusOK)
 	if err != nil {
 		return nil, errorhelper.CallerError(err)
 	}
